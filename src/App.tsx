@@ -65,7 +65,6 @@ function App() {
   const [puzzle, setPuzzle] = useState<string[][]>(
     Array.from({ length: gridSize }, () => Array(gridSize).fill(""))
   );
-  const [slices, setSlices] = useState<SliceImageResult[]>([]);
   const [emptySlot, setEmptySlot] = useState({ row: 3, col: 3 });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -73,7 +72,6 @@ function App() {
     const processImage = async () => {
       const src = nintendo;
       const result = await sliceImageIntoGrid(src);
-      setSlices(result);
 
       // Initialize puzzle with image slices
       const initialPuzzle = Array.from({ length: gridSize }, (_, row) =>
