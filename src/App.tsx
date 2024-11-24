@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import nintendo from "./images/nintendo.jpg";
 import { BackgroundLines } from "./components/ui/background-lines";
+import { Meteors } from "./components/ui/meteors";
+import { clear } from "console";
 
 type SliceImageResult = {
   x: number;
@@ -67,6 +69,17 @@ function App() {
   );
   const [emptySlot, setEmptySlot] = useState({ row: 3, col: 3 });
   const [isLoading, setIsLoading] = useState(false);
+  const [moves, setMoves] = useState(0);
+  const [time, setTime] = useState<number>(0);
+  const [startTime, setStartTime] = useState<number>(0);
+  const [originalPuzzle, setOriginalPuzzle] = useState<string[][]>(
+    Array.from({ length: gridSize }, () => Array(gridSize).fill(""))
+  );
+  const [isSolved, setIsSolved] = useState(false);
+
+  const getSeconds = (ms: number) => {
+    return Math.floor(ms / 1000);
+  };
 
   useEffect(() => {
     const processImage = async () => {
@@ -81,8 +94,8 @@ function App() {
         )
       );
       initialPuzzle[gridSize - 1][gridSize - 1] = ""; // Set last slot as empty
-      setPuzzle(initialPuzzle);
-      shufflePuzzle(initialPuzzle, { row: 3, col: 3 });
+      setOriginalPuzzle([...initialPuzzle]);
+      shufflePuzzle([...initialPuzzle], { row: 3, col: 3 });
     };
 
     processImage();
@@ -92,7 +105,7 @@ function App() {
     initialPuzzle: string[][],
     emptySlot: { row: number; col: number }
   ) => {
-    const maxShuffles = 200; // Number of random moves to shuffle
+    const maxShuffles = 10; // Number of random moves to shuffle
     let currentPuzzle = [...initialPuzzle];
     let emptyPos = { ...emptySlot };
     setIsLoading(true);
@@ -157,8 +170,46 @@ function App() {
 
       setPuzzle(newPuzzle);
       setEmptySlot({ row, col });
+      if (time === 0) {
+        setStartTime(Date.now());
+      }
+      setMoves(moves + 1);
     }
   };
+
+  useEffect(() => {
+    if (startTime === 0) return;
+    startTimer();
+  }, [startTime]);
+
+  const startTimer = () => {
+    const interval = setInterval(() => {
+      if (isSolved) {
+        clearInterval(interval);
+        return;
+      }
+      // console.log("Time: ", Date.now() - startTime);
+      setTime(Date.now() - startTime);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  };
+
+  const checkPuzzleComplete = () => {
+    const isComplete = originalPuzzle.every((row, i) =>
+      row.every((cell, j) => cell === puzzle[i][j])
+    );
+  
+    if (isComplete) {
+      console.log("Puzzle complete!");
+      setIsSolved(true);
+    }else{
+      
+    }
+  };
+  useEffect(() => {
+    // checkPuzzleComplete();
+  },[puzzle]);
 
   return (
     <BackgroundLines className="flex items-center justify-center w-full flex-col px-4 z-20 dark h-screen">
@@ -199,6 +250,17 @@ function App() {
                   ))}
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+        <div className="">
+          <div className=" w-full relative max-w-xs mb-4">
+            <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-blue-500 to-teal-500 transform scale-[0.80] bg-red-500 rounded-full blur-3xl" />
+            <div className="relative shadow-xl bg-gray-900 border border-gray-800  px-8 py-8 h-full overflow-hidden rounded-2xl flex flex-col justify-center items-center">
+              <h1 className="font-bold text-xl text-white mb-4 relative z-50">
+                {moves} moves 
+              </h1>
+              <Meteors number={20} />
             </div>
           </div>
         </div>
