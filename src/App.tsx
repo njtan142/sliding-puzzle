@@ -3,7 +3,6 @@ import "./App.css";
 import nintendo from "./images/nintendo.jpg";
 import { BackgroundLines } from "./components/ui/background-lines";
 import { Meteors } from "./components/ui/meteors";
-import { clear } from "console";
 
 type SliceImageResult = {
   x: number;
@@ -77,9 +76,9 @@ function App() {
   );
   const [isSolved, setIsSolved] = useState(false);
 
-  const getSeconds = (ms: number) => {
-    return Math.floor(ms / 1000);
-  };
+  // const getSeconds = (ms: number) => {
+  //   return Math.floor(ms / 1000);
+  // };
 
   useEffect(() => {
     const processImage = async () => {
@@ -201,14 +200,15 @@ function App() {
     );
   
     if (isComplete) {
-      console.log("Puzzle complete!");
-      setIsSolved(true);
+      // console.log("Puzzle complete!");
+      // setIsSolved(true);
+      setIsSolved(false);
     }else{
       
     }
   };
   useEffect(() => {
-    // checkPuzzleComplete();
+    checkPuzzleComplete();
   },[puzzle]);
 
   return (
